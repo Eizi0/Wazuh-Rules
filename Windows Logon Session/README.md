@@ -52,7 +52,6 @@ Convertit chaque entrée en JSON.
 
 Envoie le résultat dans active-responses.log de l’agent Wazuh.
 
-## 📜 Script PowerShell : logonsessions.ps1 :
 
 ```################################
 
@@ -96,5 +95,7 @@ Détection facilitée d’anomalies liées aux connexions suspectes.
 Réduction du bruit grâce à une règle custom adaptée.
 
 ✍️ Auteur : Jeovany Nguedjio Tsague
+
 🎓 Étudiant en Mastère Cybersécurité – ESGI Paris
+
 📌 Projet orienté Blue Team / SOC
