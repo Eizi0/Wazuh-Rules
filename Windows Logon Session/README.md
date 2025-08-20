@@ -3,7 +3,7 @@
 # Sysinternals - Logonsessions 
 ## 🔐 Intégration de Sysinternals Logonsessions avec Wazuh
 
-Si vous pensez qu’une seule session est active lorsque vous vous connectez à Windows, cet utilitaire risque de vous surprendre !
+Si vous pensez qu’une seule session est active lorsque vous vous connectez à Windows, cet utilitaire risque de vous surprendre.
 Logonsessions (de Sysinternals) permet de lister toutes les sessions en cours et, avec l’option -p, d’afficher les processus associés.
 
 ## Description
@@ -20,7 +20,7 @@ Convertir ces données en JSON pour une exploitation directe par Wazuh.
 
 Déclencher des alertes personnalisées pour améliorer la détection des menaces liées aux compromissions de comptes (MITRE ATT&CK T1078 – Valid Accounts).
 
-⚙️ Intégration avec Wazuh
+## ⚙️ Intégration avec Wazuh
 
 Capacité Wazuh utilisée : wodles-command
 Type de sortie : active-responses.log
