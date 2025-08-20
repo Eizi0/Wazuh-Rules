@@ -1,23 +1,34 @@
 
 
 # Sysinternals - Logonsessions 
-> If you think that when you logon to a system there's only one active logon session, this utility will surprise you. It lists the currently active logon sessions and, if you specify the -p option, the processes running in each session.
+## 🔐 Intégration de Sysinternals Logonsessions avec Wazuh
+
+Si vous pensez qu’une seule session est active lorsque vous vous connectez à Windows, cet utilitaire risque de vous surprendre !
+Logonsessions (de Sysinternals) permet de lister toutes les sessions en cours et, avec l’option -p, d’afficher les processus associés.
 
 ## Description
 
 [Sysinternals Logonsessions - Official documentation.](https://docs.microsoft.com/en-us/sysinternals/downloads/logonsessions)
 
-## Wazuh Integration
+## 🎯 Objectif du projet
 
-Wazuh Capability: Wodles Command
+L’idée est d’intégrer Logonsessions dans Wazuh afin de :
 
-Log Output: Active Response Log
+Collecter automatiquement les informations de sessions Windows.
 
-MITRE: T1078
+Convertir ces données en JSON pour une exploitation directe par Wazuh.
 
-Edit agent configuration in Wazuh manager (shared/groups)
+Déclencher des alertes personnalisées pour améliorer la détection des menaces liées aux compromissions de comptes (MITRE ATT&CK T1078 – Valid Accounts).
 
-(/var/ossec/etc/shared/your_windows_agents_group/agent.conf)
+⚙️ Intégration avec Wazuh
+
+Capacité Wazuh utilisée : wodles-command
+Type de sortie : active-responses.log
+MITRE ATT&CK : T1078
+
+Configuration à ajouter côté Wazuh Manager dans :
+/var/ossec/etc/shared/your_windows_agents_group/agent.conf
+
 
  ```<wodle name="command">
   <disabled>no</disabled>
@@ -29,20 +40,61 @@ Edit agent configuration in Wazuh manager (shared/groups)
   <timeout>0</timeout>
 </wodle>
 ```
-File “logonsessions.ps1”:
+## 📜 Script PowerShell : logonsessions.ps1
+
+Ce script est déclenché automatiquement par Wazuh.
+
+Exécute logonsessions.exe en mode CSV.
+
+Nettoie et formate les données.
+
+Convertit chaque entrée en JSON.
+
+Envoie le résultat dans active-responses.log de l’agent Wazuh.
+
+## 📜 Script PowerShell : logonsessions.ps1 :
 
 ```################################
-################################
-##########
-# Script execution triggered by Wazuh Manager, wodles-command
-# Output converted to JSON and appended to active-responses.log
-##########
-# RUN LOGONSESSIONS AND STORE CSV
-$Sessions_Output_CSV = c:\"Program Files"\Sysinternals\logonsessions.exe  -nobanner -c -p
-# REMOVE SPACES IN CSV HEADER AND CONVERT TO ARRAY
+
+# Exécution de Logonsessions et export CSV
+$Sessions_Output_CSV = c:\"Program Files"\Sysinternals\logonsessions.exe -nobanner -c -p
+
+# Nettoyage et conversion en tableau
 $Sessions_Output_Array = $Sessions_Output_CSV.PSObject.BaseObject.Trim(' ') -Replace '\s','' | ConvertFrom-Csv
-# GO THRU THE ARRAY, CONVERT TO JSON AND APPEND TO active-responses.log
+
+# Conversion JSON et envoi vers active-responses.log
 Foreach ($item in $Sessions_Output_Array) {
-  echo  $item | ConvertTo-Json -Compress | Out-File -width 2000 C:\"Program Files (x86)"\ossec-agent\active-response\active-responses.log -Append -Encoding ascii
- }
+  echo $item | ConvertTo-Json -Compress | Out-File -width 2000 C:\"Program Files (x86)"\ossec-agent\active-response\active-responses.log -Append -Encoding ascii
+}
+
 ```
+
+## 🛡️ Règle Wazuh personnalisée
+
+Pour exploiter les données JSON générées, une règle personnalisée a été créée :
+
+```
+<rule id="100070" level="3">
+  <decoded_as>json</decoded_as>
+  <field name="LogonSession">\.+</field>
+  <field name="UserName">\.+</field>
+  <description>Windows Logon Sessions - Snapshot</description>
+  <mitre>
+   <id>T1078</id>
+  </mitre>
+  <options>no_full_log</options>
+  <group>windows_logonsessions,</group>
+</rule>
+```
+
+## ✅ Résultats obtenus
+
+Centralisation des sessions Windows actives dans Wazuh.
+
+Détection facilitée d’anomalies liées aux connexions suspectes.
+
+Réduction du bruit grâce à une règle custom adaptée.
+
+✍️ Auteur : Jeovany Nguedjio Tsague
+🎓 Étudiant en Mastère Cybersécurité – ESGI Paris
+📌 Projet orienté Blue Team / SOC
