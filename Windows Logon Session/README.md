@@ -94,7 +94,7 @@ Détection facilitée d’anomalies liées aux connexions suspectes.
 
 Réduction du bruit grâce à une règle custom adaptée.
 
-✍️ Auteur : Jeovany Nguedjio Tsague
+✍️ Auteur : Eizi0
 
 🎓 Étudiant en Mastère Cybersécurité – ESGI Paris
 
