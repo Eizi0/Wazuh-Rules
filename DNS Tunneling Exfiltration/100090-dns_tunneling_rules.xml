@@ -1,0 +1,23 @@
+<group name="windows,sysmon,dns_tunneling,">
+
+<rule id="100090" level="3">
+  <if_group>sysmon_event22</if_group>
+  <field name="win.eventdata.QueryName" type="pcre2">^.{40,}$</field>
+  <description>Sysmon : requête DNS vers un nom d'hôte anormalement long (&gt;= 40 caractères)</description>
+  <mitre>
+    <id>T1048.003</id>
+  </mitre>
+  <group>dns_tunneling,</group>
+</rule>
+
+<rule id="100091" level="10" frequency="8" timeframe="300">
+  <if_matched_sid>100090</if_matched_sid>
+  <same_field>win.system.computer</same_field>
+  <description>Possible tunneling DNS / exfiltration : volume anormal de requêtes DNS à noms longs depuis le même poste en moins de 5 minutes</description>
+  <mitre>
+    <id>T1048.003</id>
+  </mitre>
+  <group>dns_tunneling,</group>
+</rule>
+
+</group>
